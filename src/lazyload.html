@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片的懒加载</title>
+    <style>
+        li {
+            height: 100px;
+            width: 100px;
+            background: #CCC;
+            margin-bottom: 20px;
+        }
+    </style>
+  
+</head>
+<body>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+    </ul>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+    </ul>
+    <img class="imgLazyLoad" data-src="https://mirror-gold-cdn.xitu.io/168e08afcd743183839?imageView2/1/w/100/h/100/q/85/format/webp/interlace/1" />
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+    </ul>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+    </ul>
+    <script>
+
+        function throttle(func, wait){
+            var timer = null;
+            return function(...args){
+                clearTimeout(timer);
+
+                var context = this;
+
+                timer = setTimeout(function(){
+                    func.apply(context, args);
+                }, wait);
+            }
+        }
+
+        function loadImg(node){
+            let src = node.getAttribute('data-src');
+            node.setAttribute('src', src);
+        }
+
+        function ifVisual(node, viewHeight){
+            let coords = node.getBoundingClientRect();
+
+            if(coords.top > 0 && coords.top <= viewHeight) {
+                return true;
+            } 
+
+            return false;
+        }   
+
+        window.onload = function(){
+            const viewHeight = document.documentElement.clientHeight;
+
+            var lazyNodes = document.querySelectorAll('.imgLazyLoad');
+            var imgList = [].slice.call(lazyNodes, 0);
+
+            window.onscroll = throttle(function(e) {
+
+                imgList.forEach(function(imgNode, index){
+                    if(ifVisual(imgNode, viewHeight)) {
+                        loadImg(imgNode);                        
+                    }
+                });
+
+            }, 250);
+        }
+    </script>
+</body>
+</html>
